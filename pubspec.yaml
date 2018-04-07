@@ -1,0 +1,4 @@
+name: icecream
+description: A simple debuger tool
+dependencies:
+    inspect: "^0.0.1"
