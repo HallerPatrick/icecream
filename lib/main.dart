@@ -64,9 +64,21 @@ String getVariableName(String filename, int line, int argumentIndex) async {
   var lineNumber = stack.getFrame(6).lineNumber;
   
   List<String> lines = await new File(filename).readAsLines();
-  print(lines[lineNumber-1]);
+  var variable = extractVariable(lines[lineNumber-1], argumentIndex);
   return "";
 }
+
+String extractVariable(String line, int index) {
+  String regex = "ic(.*)";
+  RegExp regexp = new RegExp(regex);
+  Iterable<Match> matches = regexp.allMatches(line);
+  for(final match in matches) {
+    //print(match.group(2));
+  }
+  print(line.replaceFirst('ic(', '').replaceFirst(');', '').split(", ").length);
+  return "";
+}
+
 
 class IcCreamDebugger {
 
