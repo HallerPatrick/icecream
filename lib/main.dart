@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:mirrors';
 
+import 'package:icecream/content_parser.dart';
 import 'package:inspect/inspect.dart';
 
 const String DEFAULT_PREFIX = 'ic| ';
@@ -59,7 +60,7 @@ String icWithArguments(arguments) {
   return output;
 }
 
-String getVariableName(String filename, int line, int argumentIndex) async {
+Future<String> getVariableName(String filename, int line, int argumentIndex) async {
   // For now:
   // variables and concrete datastructures possible
   // e.g.:
@@ -86,6 +87,12 @@ String extractVariable1(String line, int index) {
 }
 
 String extractVariable(String line, int index) {
+  // Check if expression is one-liner
+  if(line.contains("ic(") && line.contains(");")) {
+    print("true");
+  }
+  line.replaceFirst("ic(", "");
+
   return "";
 }
 
@@ -93,6 +100,8 @@ String extractVariable(String line, int index) {
 class IcCreamDebugger {
 
   static const prefix = DEFAULT_PREFIX;
+
+  ContentParser parser = new ContentParser();
 
   final call = new VarargsFunction((arguments) {
     var output;
