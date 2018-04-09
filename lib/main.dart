@@ -60,6 +60,12 @@ String icWithArguments(arguments) {
 }
 
 String getVariableName(String filename, int line, int argumentIndex) async {
+  // For now:
+  // variables and concrete datastructures possible
+  // e.g.:
+  // ic(x, y); , ic(2, 4);, ic(x, [2, 4], "hello")
+
+
   var stack = new DartStack();
   var lineNumber = stack.getFrame(6).lineNumber;
   
@@ -68,7 +74,7 @@ String getVariableName(String filename, int line, int argumentIndex) async {
   return "";
 }
 
-String extractVariable(String line, int index) {
+String extractVariable1(String line, int index) {
   String regex = "ic(.*)";
   RegExp regexp = new RegExp(regex);
   Iterable<Match> matches = regexp.allMatches(line);
@@ -76,6 +82,10 @@ String extractVariable(String line, int index) {
     //print(match.group(2));
   }
   print(line.replaceFirst('ic(', '').replaceFirst(');', '').split(", ").length);
+  return "";
+}
+
+String extractVariable(String line, int index) {
   return "";
 }
 
