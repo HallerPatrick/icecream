@@ -1,3 +1,5 @@
+
+import 'dart:html';
 import '../lib/main.dart';
 import 'package:inspect/inspect.dart';
 
@@ -9,5 +11,7 @@ void main()  {
 
   var x = 3;
   Hello dummy = new Hello();
-  ic(x, dummy, [2, "now"]);
+  // ic(x, dummy, [2, "now"]);
+  window.console.info("info message");
+  
 }
