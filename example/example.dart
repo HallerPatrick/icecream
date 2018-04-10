@@ -21,7 +21,7 @@ void main()  {
   // var parser = new ContentParser();
   // parser.getVariables(line);
 
-  var listString = "[2, 3, [x]]";
+  var listString = "[2, 3, [x]], rofl";
   print(getListToken(listString));
 }
 
@@ -30,18 +30,17 @@ String getListToken(String input) {
   String token = "";
   int openBrackets = 1;
   print("Param: $input");
-  print(input.substring(1, input.length));
-  print(input.substring(1, input.length)[0]);
-  while(input.substring(1, input.length)[0] != "]" && openBrackets > 1) {
+  while(openBrackets > 0) {
     print("Input: $input");
     print("Token: $token");
-    if(input.substring(1, input) == "[") {
+    if(input.substring(1, input.length)[0] == "[") {
       openBrackets++;
     }
-    if(input.substring(1, input) == "]") {
+    if(input.substring(1, input.length)[0] == "]") {
       openBrackets--;
     }
     token += input.substring(1, input.length)[0];
+    input = input.substring(1, input.length);
   }
   return token;
 }

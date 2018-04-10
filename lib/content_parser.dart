@@ -18,12 +18,12 @@ class ContentParser {
   }
 
   bool isNumeric(String s) {
-      if (s == null) {
-        return false;
-      }
-      return double.parse(s, (e) => null) != null ||
-          int.parse(s, onError: (e) => null) != null;
+    if (s == null) {
+      return false;
     }
+    return double.parse(s, (e) => null) != null ||
+        int.parse(s, onError: (e) => null) != null;
+  }
 
   bool isAlpha(String s) {
     RegExp _alpha = new RegExp(r'^[a-zA-Z]+$');
@@ -57,16 +57,19 @@ class ContentParser {
 
         case TokenType.List:
           {
+            tokens.add(getListToken());
             break;
           }
 
         case TokenType.Map:
           {
+            tokens.add(getMapToken());
             break;
           }
 
         case TokenType.Variable:
           {
+            tokens.add(getVariableToken());
             break;
           }
         case TokenType.Class:
@@ -99,7 +102,45 @@ class ContentParser {
   }
 
   String getListToken() {
-    
+    String token = "";
+    int openBrackets = 1;
+    while (openBrackets > 0) {
+      if (this.input.substring(1, this.input.length)[0] == "[") {
+        openBrackets++;
+      }
+      if (this.input.substring(1, this.input.length)[0] == "]") {
+        openBrackets--;
+      }
+      token += this.input.substring(1, this.input.length)[0];
+      this.input = this.input.substring(1, this.input.length);
+    }
+    return token;
+  }
+
+  String getMapToken() {
+    String token = "";
+    int openBrackets = 1;
+    while (openBrackets > 0) {
+      if (this.input.substring(1, this.input.length)[0] == "{") {
+        openBrackets++;
+      }
+      if (this.input.substring(1, this.input.length)[0] == "}") {
+        openBrackets--;
+      }
+      token += this.input.substring(1, this.input.length)[0];
+      this.input = this.input.substring(1, this.input.length);
+    }
+    return token;
+  }
+
+  String getVariableToken() {
+    String token = "";
+    StringType stringType = evalStringType();
+    while (this.input.substring(1, this.input.length)[0] != stringType) {
+      token += this.input.substring(1, this.input.length)[0];
+      this.input = this.input.substring(1, this.input.length);
+    }
+    return token;
   }
 
   StringType evalStringType() {
