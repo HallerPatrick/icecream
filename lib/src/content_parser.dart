@@ -13,14 +13,6 @@ class ContentParser {
     this._input = _input;
   }
 
-  bool _isOneLiner(String line) {
-    if (line.contains("ic(") && line.contains(");")) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   bool _isNumeric(String s) {
     if (s == null) {
       return false;
@@ -47,6 +39,7 @@ class ContentParser {
 
   /// Tokenizes the _input string in its corresponding types
   List<String> parse() {
+
     List<String> tokens = [];
 
     while (this._input != "") {

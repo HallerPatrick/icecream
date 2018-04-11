@@ -23,6 +23,8 @@ void main() {
   // print(parser.parse());
   
 
-  ic(3,
-  3);
+  ic(
+    3,
+    foo(2, 3)
+  );
 }
