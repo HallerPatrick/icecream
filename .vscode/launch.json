@@ -8,7 +8,7 @@
             "name": "Dart command line",
             "program": "${workspaceRoot}/bin/main.dart",
             "request": "launch",
-            "type": "dart-cli"
+            "type": "dart"
         }
     ]
 }

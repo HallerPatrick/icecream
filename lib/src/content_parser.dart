@@ -21,7 +21,7 @@ class ContentParser {
     }
   }
 
-  bool isNumeric(String s) {
+  bool _isNumeric(String s) {
     if (s == null) {
       return false;
     }
@@ -29,17 +29,16 @@ class ContentParser {
         int.parse(s, onError: (e) => null) != null;
   }
 
-  bool isAlpha(String s) {
+  bool _isAlpha(String s) {
     RegExp _alpha = new RegExp(r'^[a-zA-Z]+$');
     return _alpha.hasMatch(s);
   }
 
   TokenType _evalType(char) {
-    print("EVAL CHAR: $char");
     if (char == " ") return TokenType.Whitespace;
     if (char == ",") return TokenType.Comma;
-    if (isNumeric(char)) return TokenType.Int;
-    if (isAlpha(char)) return TokenType.Variable;
+    if (_isNumeric(char)) return TokenType.Int;
+    if (_isAlpha(char)) return TokenType.Variable;
     if ('"' == char || "'" == char) return TokenType.String;
     if ('[' == char || ']' == char) return TokenType.List;
     if ('{' == char || '}' == char) return TokenType.Map;
@@ -110,7 +109,7 @@ class ContentParser {
   }
 
   String getStringToken() {
-    StringType stringType = evalStringType();
+    String stringType = evalStringType();
     String token = this.input[0];
     this.input = this.input.substring(1, this.input.length);
       while (this.input.length > 1) {
@@ -124,7 +123,6 @@ class ContentParser {
           this.input = this.input.substring(2, this.input.length);
           return token;
         }
-      
     }
     return token;
   }
@@ -137,7 +135,7 @@ class ContentParser {
       return token;
     } else {
       while (this.input.length > 1) {
-        if (isNumeric(this.input.substring(1, this.input.length)[0])) {
+        if (_isNumeric(this.input.substring(1, this.input.length)[0])) {
           token += this.input.substring(1, this.input.length)[0];
           this.input = this.input.substring(1, this.input.length);
         } else {
@@ -194,7 +192,7 @@ class ContentParser {
       return token;
     } else {
       while (this.input.length > 1) {
-        if (isAlpha(this.input.substring(1, this.input.length)[0])) {
+        if (_isAlpha(this.input.substring(1, this.input.length)[0])) {
           token += this.input.substring(1, this.input.length)[0];
           this.input = this.input.substring(1, this.input.length);
         } else {
