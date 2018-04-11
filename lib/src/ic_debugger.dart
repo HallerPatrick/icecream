@@ -1,6 +1,11 @@
-part of 'icecream';
+import 'dart:async';
+import 'dart:io';
+import 'dart:mirrors';
+import 'package:icecream/src/content_parser.dart';
+import 'package:inspect/inspect.dart' show DartStack;
 
 
+const String DEFAULT_PREFIX_UTF = "🍦 ";
 const String DEFAULT_PREFIX = 'ic| ';
 const String DEFAULT_INDENT = '  ';
 
@@ -27,7 +32,7 @@ void outputFunction(String output) {
 
 String icWithoutArguments() {
   // 4th called frame is ic-Call
-  var stack = new DartStack().getFrame(4);
+  var stack = new DartStack().getFrame(5);
 
   // Line number of 4th frame 
   var lineNumber =  stack.lineNumber;  
@@ -35,24 +40,31 @@ String icWithoutArguments() {
   // Take script name of complete directory
   var filename = stack.source.split("/").last;
 
-  return "$filename:$lineNumber";
+  return "$filename:$lineNumber in ${stack.methodName}()";
 }
 
-String icWithArguments(arguments) {
+Future<String> icWithArguments(arguments) async {
   String output = "";
 
-  var stack = new DartStack().getFrame(4);
+  var stack = new DartStack();
+
   
+  stack = stack.getFrame(6);
+
   var lineNumber = stack.lineNumber;
 
   var filename = stack.source.split("/").last;
 
+
   for (var i=0; i < arguments.length; i++) {
-    getVariableName(filename, lineNumber, i);
+    final String name = await getVariableName(filename, lineNumber, i);
     var arg = arguments[i];
-    final type = reflect(arg).type.reflectedType.toString();
-    final name = reflect(arg).type.qualifiedName.toString();
-    output += type + ": " + arg.toString() + ", ";
+    final type = reflect(arg).type.typeVariables;
+    final name1 = reflect(arg).type.qualifiedName.toString();
+    print("arg: $arg");
+    
+    output += name + ": " + arg.toString();
+    if(i < arguments.length-1 && arguments.length > 1) output += ", ";
   }
   return output;
 }
@@ -65,53 +77,55 @@ Future<String> getVariableName(String filename, int line, int argumentIndex) asy
 
 
   var stack = new DartStack();
-  var lineNumber = stack.getFrame(6).lineNumber;
+
+  var lineNumber = stack.getFrame(8).lineNumber;
+  // for(int i=0; i<stack.frameCount; i++) print(" $i -> ${stack.getFrame(i).source}");
   
-  List<String> lines = await new File(filename).readAsLines();
-  var variable = extractVariable(lines[lineNumber-1], argumentIndex);
-  return "";
+
+  List<String> lines =  await new File(filename).readAsLines();
+
+  var line = lines[lineNumber-1].replaceFirst('ic(', '').replaceFirst(');', '');
+
+  var variable = extractVariable(line, argumentIndex);
+  return variable;
 }
 
-String extractVariable1(String line, int index) {
-  String regex = "ic(.*)";
-  RegExp regexp = new RegExp(regex);
-  Iterable<Match> matches = regexp.allMatches(line);
-  for(final match in matches) {
-    //print(match.group(2));
-  }
-  print(line.replaceFirst('ic(', '').replaceFirst(');', '').split(", ").length);
-  return "";
-}
-
-String extractVariable(String line, int index) {
-  // Check if expression is one-liner
-  if(line.contains("ic(") && line.contains(");")) {
-    print("true");
-  }
-  line.replaceFirst("ic(", "");
-
-  return "";
-}
-
+String extractVariable(String line, int index) => new ContentParser(line).parse()[index];
 
 class IcCreamDebugger {
 
-  static const prefix = DEFAULT_PREFIX;
+  static const prefix = DEFAULT_PREFIX_UTF;
 
-  ContentParser parser = new ContentParser();
-
-  final call = new VarargsFunction((arguments) {
-    var output;
+  final call = new VarargsFunction((arguments) async {
+    String output;
     // If no arguments are given, output filename and called line
     if (arguments.length == 0) {
       output = icWithoutArguments();
     } else {
-      output = icWithArguments(arguments);
+      output = await icWithArguments(arguments);
     }
 
     outputFunction("$prefix $output ");
   });
 
 }
+
+VarargsFunction ic_debugger = new VarargsFunction((arguments) async {
+
+    String _prefix = DEFAULT_PREFIX_UTF;
+
+    String output;
+
+    // If no arguments are given, output filename and called line
+    if (arguments.length == 0) {
+      output = icWithoutArguments();
+    } else {
+      output = await icWithArguments(arguments);
+    }
+
+    outputFunction("$_prefix $output ");
+    
+     
+  });
 
 // final IcCreamDebugger ic = new IcCreamDebugger();

@@ -1,19 +1,28 @@
+import 'package:icecream/icecream.dart' show ic;
 import 'package:icecream/src/content_parser.dart';
 
 class Hello {}
 
 void hello() {}
 
+foo(int x, int y) {
+  ic();
+  return x + y;
+}
+
 void main() {
-  var x = 3;
+  var x = ["3", 3];
+
   Hello dummy = new Hello();
 
-  var listString = "[2, 3, [x]], 'rofl'";
-  var line = "x, y, 'Hello', 'hey'";
-  var line1 = ",y";
+  var y = "foo(1, 2)";
 
-  var y = '["hello", 1]';
-  var parser = new ContentParser(line);
-  List<String> tokens = parser.parse();
-  print(tokens);
+  var parser = new ContentParser(y);
+
+
+  // print(parser.parse());
+  
+
+  ic(3,
+  3);
 }

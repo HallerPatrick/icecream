@@ -7,10 +7,10 @@ class StringType {
 }
 
 class ContentParser {
-  String input;
+  String _input;
 
-  ContentParser(String input) {
-    this.input = input;
+  ContentParser(String _input) {
+    this._input = _input;
   }
 
   bool _isOneLiner(String line) {
@@ -45,62 +45,63 @@ class ContentParser {
     return TokenType.Class;
   }
 
-  /// Tokenizes the input string in its corresponding types
+  /// Tokenizes the _input string in its corresponding types
   List<String> parse() {
     List<String> tokens = [];
 
-    while (this.input != "") {
+    while (this._input != "") {
       // Determine from first char of token, what type it is
-      switch (_evalType(this.input[0])) {
+      switch (_evalType(this._input[0])) {
+        
         case TokenType.Whitespace:
           {
-            if (this.input.length > 1) {
-              this.input = this.input.substring(1, this.input.length);
+            if (this._input.length > 1) {
+              _removeFirstCharFromInput();
             } else {
-              this.input = "";
+              this._input = "";
             }
             break;
           }
         case TokenType.Comma:
           {
-            if (this.input.length > 1) {
-              this.input = this.input.substring(1, this.input.length);
+            if (this._input.length > 1) {
+              _removeFirstCharFromInput();
             } else {
-              this.input = "";
+              this._input = "";
             }
             break;
           }
         case TokenType.String:
           {
-            tokens.add(getStringToken());
+            tokens.add(_getStringToken());
             break;
           }
         case TokenType.Int:
           {
-            tokens.add(getIntToken());
+            tokens.add(_getIntToken());
             break;
           }
 
         case TokenType.List:
           {
-            tokens.add(getListToken());
+            tokens.add(_getListToken());
             break;
           }
 
         case TokenType.Map:
           {
-            tokens.add(getMapToken());
+            tokens.add(_getMapToken());
             break;
           }
 
         case TokenType.Variable:
           {
-            tokens.add(getVariableToken());
+            tokens.add(_getVariableToken());
             break;
           }
         case TokenType.Class:
           {
-            tokens.add(getClassToken());
+            tokens.add(_getClassToken());
             break;
           }
       }
@@ -108,39 +109,37 @@ class ContentParser {
     return tokens;
   }
 
-  String getStringToken() {
-    String stringType = evalStringType();
-    String token = this.input[0];
-    this.input = this.input.substring(1, this.input.length);
-      while (this.input.length > 1) {
-        if (this.input.substring(1, this.input.length)[0] != stringType) {
-          token += this.input[0];
-          this.input = this.input.substring(1, this.input.length);
+  String _getStringToken() {
+    String stringType = _evalStringType();
+    String token = _input[0];
+    _removeFirstCharFromInput();
+      while (_input.length >= 1) {
+        if (_input[0] != stringType) {
+          token += _input[0];
+          _removeFirstCharFromInput();
         } else {
           /// Remove the last two chars of token and add to string
-          token += this.input[0];
-          token += this.input[1];
-          this.input = this.input.substring(2, this.input.length);
+          token += this._input[0];
+          _removeFirstCharFromInput();
           return token;
         }
     }
     return token;
   }
 
-  String getIntToken() {
+  String _getIntToken() {
     String token = "";
-    if (this.input.length == 1) {
-      token = this.input;
-      this.input = "";
+    if (this._input.length == 1) {
+      token = this._input;
+      this._input = "";
       return token;
     } else {
-      while (this.input.length > 1) {
-        if (_isNumeric(this.input.substring(1, this.input.length)[0])) {
-          token += this.input.substring(1, this.input.length)[0];
-          this.input = this.input.substring(1, this.input.length);
+      while (this._input.length > 1) {
+        if (_isNumeric(_input[0])) {
+          token += _input[0];
+          _removeFirstCharFromInput();
         } else {
-          token += this.input[0];
-          this.input = this.input.substring(1, this.input.length);
+          _removeFirstCharFromInput();
           return token;
         }
       }
@@ -148,75 +147,111 @@ class ContentParser {
     return token;
   }
 
-  String getListToken() {
-    String token = "";
-    int openBrackets = 1;
-    while (openBrackets >= 0 && this.input.length > 1) {
-      print("Current token: $token");
-      if (this.input.substring(1, this.input.length)[0] == "[") {
-        openBrackets++;
-      }
-      if (this.input.substring(1, this.input.length)[0] == "]") {
-        openBrackets--;
-      }
-      print("Current openBrackts: $openBrackets");
-      print("Current input: $input");
-    
-      token += this.input[0];
-      this.input = this.input.substring(1, this.input.length);
-    }
-    return token;
+  _removeFirstCharFromInput() {
+    _input = _input.substring(1, _input.length);
   }
 
-  String getMapToken() {
+  String _getListToken() {
     String token = "";
-    int openBrackets = 1;
-    while (openBrackets > 0) {
-      if (this.input.substring(1, this.input.length)[0] == "{") {
-        openBrackets++;
-      }
-      if (this.input.substring(1, this.input.length)[0] == "}") {
-        openBrackets--;
-      }
-      token += this.input.substring(1, this.input.length)[0];
-      this.input = this.input.substring(1, this.input.length);
-    }
-    return token;
-  }
-
-  String getVariableToken() {
-    String token = "";
-    if (this.input.length == 1) {
-      token = this.input;
-      this.input = "";
-      return token;
+    int openBrackets = 0;
+    if(_input[0] == "[") {
+      openBrackets++;
+      token += _input[0];
+      _removeFirstCharFromInput();
     } else {
-      while (this.input.length > 1) {
-        if (_isAlpha(this.input.substring(1, this.input.length)[0])) {
-          token += this.input.substring(1, this.input.length)[0];
-          this.input = this.input.substring(1, this.input.length);
-        } else {
-          token += this.input[0];
-          this.input = this.input.substring(1, this.input.length);
+      return "";
+    }
+    while (this._input.length >= 1) {
+      if (_input[0] == "[") {
+        openBrackets++;
+      }
+      if (_input[0] == "]") {
+        openBrackets--;
+        if(openBrackets == 0) {
+          token += _input[0];
+          _removeFirstCharFromInput();
           return token;
         }
       }
-      return token;
+      token += this._input[0];
+      _removeFirstCharFromInput();
     }
+    return token;
   }
 
-  String getClassToken() {
+  String _getMapToken() {
+    String token = "";
+    int openBrackets = 0;
+    if(_input[0] == "{") {
+      openBrackets++;
+      token += _input[0];
+      _removeFirstCharFromInput();
+    } else {
+      return "";
+    }
+    while (this._input.length >= 1) {
+      if (_input[0] == "{") {
+        openBrackets++;
+      }
+      if (_input[0] == "}") {
+        openBrackets--;
+        if(openBrackets == 0) {
+          token += _input[0];
+          _removeFirstCharFromInput();
+          return token;
+        }
+      }
+      token += this._input[0];
+      _removeFirstCharFromInput();
+    }
+    return token;
+  }
+
+  String _getVariableToken() {
+    String token = "";
+    // Variable type could also be function type, depending on brackets
+    int openBrackets = 0;
+    while (this._input.length >= 1) {
+      // Check if next char is a letter 
+      if (_isAlpha(_input[0])) {
+        token += _input[0];
+        _removeFirstCharFromInput();
+      // If char is opening bracket, expected variable is a function call
+      } else if(_input[0] == "(") {
+        openBrackets++;
+        token += _input[0];
+        _removeFirstCharFromInput();
+      } else if(_input[0] == ")") {
+        openBrackets--;
+        token += _input[0];
+        _removeFirstCharFromInput();
+        if(openBrackets == 0) {
+          return token;
+        }
+      // Mean that input is a function and also allows other chars than letters
+      } else if(openBrackets > 0) {
+        token += _input[0];
+        _removeFirstCharFromInput();
+      } else {
+        _removeFirstCharFromInput();
+        return token;
+      }
+    }
+    return token;
+  }
+
+  String _getClassToken() {
     String token = "";
     String classKeyword = "new";
-    if (this.input.contains(classKeyword)) {
-      this.input.replaceFirst("new ", "");
+    if (this._input.contains(classKeyword)) {
+      this._input.replaceFirst("new ", "");
       token += "new ";
     }
     return token;
   }
 
-  String evalStringType() {
-    if (this.input[0] == '"') {
+  String _evalStringType() {
+    if (this._input[0] == '"') {
       return StringType.DoubleQuoteMark;
     } else {
       return StringType.SingleQuoteMark;

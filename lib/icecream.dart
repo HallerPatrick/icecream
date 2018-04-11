@@ -1,10 +1,7 @@
 library icecream;
 
-import 'dart:io';
-import 'dart:mirrors';
+import 'package:icecream/src/ic_debugger.dart';
 
-import 'package:inspect/inspect.dart';
+// ic(arguments) => new IcCreamDebugger().call(arguments);
 
-part 'src/ic_debugger.dart';
-
-final IcCreamDebugger ic = new IcCreamDebugger();
+VarargsFunction ic = ic_debugger;
