@@ -1,6 +1,10 @@
+
 enum TokenType { String, Int, Variable, List, Map, Class, Whitespace, Comma }
 
-enum StringType { SingleQuoteMark, DoubleQuoteMark }
+class StringType {
+  static const String SingleQuoteMark = "'";
+  static const String DoubleQuoteMark = '"';
+}
 
 class ContentParser {
   String input;
@@ -47,28 +51,26 @@ class ContentParser {
     List<String> tokens = [];
 
     while (this.input != "") {
-      print(this.input[0]);
-      print(_evalType(this.input[0]));
       // Determine from first char of token, what type it is
       switch (_evalType(this.input[0])) {
         case TokenType.Whitespace:
-        { 
-          if(this.input.length > 1) {
-            this.input = this.input.substring(1, this.input.length);
-          } else {
-            this.input = "";
+          {
+            if (this.input.length > 1) {
+              this.input = this.input.substring(1, this.input.length);
+            } else {
+              this.input = "";
+            }
+            break;
           }
-          break;
-        }
         case TokenType.Comma:
-        {
-          if(this.input.length > 1) {
-            this.input = this.input.substring(1, this.input.length);
-          } else {
-            this.input = "";
+          {
+            if (this.input.length > 1) {
+              this.input = this.input.substring(1, this.input.length);
+            } else {
+              this.input = "";
+            }
+            break;
           }
-          break;
-        }
         case TokenType.String:
           {
             tokens.add(getStringToken());
@@ -111,43 +113,31 @@ class ContentParser {
     StringType stringType = evalStringType();
     String token = this.input[0];
     this.input = this.input.substring(1, this.input.length);
-
-    "y'";
-    
-    // ["'", h, e, y, ]
-    if (this.input.length == 1) {
-      token += this.input;
-      this.input = "";
-      return token;
-    } else {
       while (this.input.length > 1) {
         if (this.input.substring(1, this.input.length)[0] != stringType) {
-          print("input: $input");
-          print("->$token");
           token += this.input[0];
-          this.input = this.input.substring(1, this.input.length);    
+          this.input = this.input.substring(1, this.input.length);
         } else {
-          print("input2: $input");
-          print("->2$token");
+          /// Remove the last two chars of token and add to string
           token += this.input[0];
-          token +=  this.input[1];
+          token += this.input[1];
           this.input = this.input.substring(2, this.input.length);
           return token;
         }
-      }
+      
     }
     return token;
   }
 
   String getIntToken() {
     String token = "";
-    if(this.input.length == 1) {
+    if (this.input.length == 1) {
       token = this.input;
       this.input = "";
       return token;
     } else {
       while (this.input.length > 1) {
-        if(isNumeric(this.input.substring(1, this.input.length)[0])) {
+        if (isNumeric(this.input.substring(1, this.input.length)[0])) {
           token += this.input.substring(1, this.input.length)[0];
           this.input = this.input.substring(1, this.input.length);
         } else {
@@ -163,14 +153,18 @@ class ContentParser {
   String getListToken() {
     String token = "";
     int openBrackets = 1;
-    while (openBrackets > 0) {
+    while (openBrackets >= 0 && this.input.length > 1) {
+      print("Current token: $token");
       if (this.input.substring(1, this.input.length)[0] == "[") {
         openBrackets++;
       }
       if (this.input.substring(1, this.input.length)[0] == "]") {
         openBrackets--;
       }
-      token += this.input.substring(1, this.input.length)[0];
+      print("Current openBrackts: $openBrackets");
+      print("Current input: $input");
+    
+      token += this.input[0];
       this.input = this.input.substring(1, this.input.length);
     }
     return token;
@@ -194,7 +188,7 @@ class ContentParser {
 
   String getVariableToken() {
     String token = "";
-    if(this.input.length == 1) {
+    if (this.input.length == 1) {
       token = this.input;
       this.input = "";
       return token;
@@ -209,21 +203,21 @@ class ContentParser {
           return token;
         }
       }
-    return token;
+      return token;
     }
   }
 
   String getClassToken() {
     String token = "";
     String classKeyword = "new";
-    if(this.input.contains(classKeyword)) {
+    if (this.input.contains(classKeyword)) {
       this.input.replaceFirst("new ", "");
       token += "new ";
     }
     return token;
   }
 
-  StringType evalStringType() {
+  String evalStringType() {
     if (this.input[0] == '"') {
       return StringType.DoubleQuoteMark;
     } else {

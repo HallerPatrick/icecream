@@ -1,4 +1,4 @@
-import 'package:icecream/content_parser.dart';
+import 'package:icecream/src/content_parser.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -1,8 +1,5 @@
-import 'dart:io';
-import 'dart:mirrors';
+part of 'icecream';
 
-import 'package:icecream/content_parser.dart';
-import 'package:inspect/inspect.dart';
 
 const String DEFAULT_PREFIX = 'ic| ';
 const String DEFAULT_INDENT = '  ';
@@ -117,4 +114,4 @@ class IcCreamDebugger {
 
 }
 
-final IcCreamDebugger ic = new IcCreamDebugger();
+// final IcCreamDebugger ic = new IcCreamDebugger();
