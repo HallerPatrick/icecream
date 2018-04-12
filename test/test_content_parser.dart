@@ -15,6 +15,12 @@ void main() {
       List<String> tokens = parser.parse();
       expect(tokens, equals(["x", "y", "z"]));
     });
+    test("Check for functions", () {
+      var line = "foo()";
+      var parser = new ContentParser(line);
+      List<String> tokens = parser.parse();
+      expect(tokens, equals(["foo()"]));
+    });
   });
 
   group("Testing core datatypes passed", () {
@@ -35,6 +41,18 @@ void main() {
       var parser = new ContentParser(line);
       List<String> tokens = parser.parse();
       expect(tokens, equals(["1", "2", "3"]));
+    });
+    test("Check for simple list", () {
+      var line = "[1, 'rick', 'morty']";
+      var parser = new ContentParser(line);
+      List<String> tokens = parser.parse();
+      expect(tokens, equals(["[1, 'rick', 'morty']"]));
+    });
+    test('Check for nested lists', () {
+      var line = "[['hello'], [], [2, 3]]";
+      var parser = new ContentParser(line);
+      List<String> tokens = parser.parse();
+      expect(tokens, equals(["[['hello'], [], [2, 3]]"]));
     });
   });
 }
