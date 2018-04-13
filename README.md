@@ -73,3 +73,11 @@ import 'package:icecream/icecream.dart' show ic;
 void main() async {
   var output = await ic("Hello");
 }
+ ```
+
+ ### TODO:
+
+ 1. Extensive testing
+ 2. Proper documentation
+ 3. Provide all icecream flavors with a juicy icon
+ 4. Provide own configuration for flexible use of ic
