@@ -7,7 +7,7 @@ const String DEFAULT_PREFIX_UTF = "🍦 ";
 const String DEFAULT_PREFIX = 'ic| ';
 const String DEFAULT_INDENT = '  ';
 
-String regex = "ic\([^\)]*\)";
+String regex = "ic\(.*\)";
 RegExp regExp = new RegExp(regex);
 
 typedef dynamic OnCall(List);
@@ -43,7 +43,7 @@ String icWithoutArguments() {
   // Take script name of complete directory
   var filename = stack.source.split("/").last;
 
-  return "$filename:$lineNumber in ${stack.methodName}()";
+  return "$filename:$lineNumber in ${stack.methodName.trim()}()";
 }
 
 Future<String> icWithArguments(arguments) async {
@@ -54,9 +54,10 @@ Future<String> icWithArguments(arguments) async {
   stack = stack.getFrame(6);
 
   var lineNumber = stack.lineNumber;
-  
+
   var filename = stack.source.replaceFirst('file://', '');
 
+  // Formatting of variables
   for (var i = 0; i < arguments.length; i++) {
     final String name = await getVariableName(filename, lineNumber, i);
     var arg = arguments[i];
@@ -75,56 +76,64 @@ Future<String> getVariableName(
 
   var stack = new DartStack();
 
+  // 8th stack is the ic call
   var lineNumber = stack.getFrame(8).lineNumber;
 
-  // for(int i=0; i<stack.frameCount; i++) print(" $i -> ${stack.getFrame(i).source}");
-  List<String> lines = await new File(filename).readAsLines();  
-  
-  var line = lines[lineNumber-1];
+  // Extract line from file
+  List<String> lines = await new File(filename).readAsLines();
+  var line = lines[lineNumber - 1];
 
-  print(regExp.firstMatch(line).group(1));
-
-  
+  // Check if ic-call is longer than line and add missing part if needed
   if (!isOneLiner(line)) {
-    var currentLineNumber = lineNumber-1;
+    var currentLineNumber = lineNumber - 1;
     while (!lines[currentLineNumber].contains(");")) {
       line += lines[currentLineNumber].trim();
       currentLineNumber++;
     }
   } else {
-    line = lines[lineNumber - 1].replaceFirst('ic(', '').replaceFirst(');', '');
+    line = lines[lineNumber - 1];
   }
 
-  var variable = extractVariable(line, argumentIndex);
+  // Extract only the arguments from ic-call
+  if (regExp.hasMatch(line)) {
+    line = regExp.firstMatch(line).group(1);
+  }
+
+  line = line.replaceFirst('(', '').replaceFirst(');', '');
+
+  // Check if class init is used, and remove the "new" part for the content parser
+  List<String> args = [];
+  line
+      .split(",")
+      .forEach((arg) => args.add(arg.replaceFirst("new ", "")));
+
+  var variable = extractVariable(args.join(","), argumentIndex);
   return variable;
 }
 
 String extractVariable(String line, int index) =>
     new ContentParser(line).parse()[index];
 
-class IcCreamDebugger {
-  static const prefix = DEFAULT_PREFIX_UTF;
-
-  final call = new VarargsFunction((arguments) async {
-    String output;
-    // If no arguments are given, output filename and called line
-    if (arguments.length == 0) {
-      output = icWithoutArguments();
-    } else {
-      output = await icWithArguments(arguments);
-    }
-
-    printOutput("$prefix $output ");
-  });
-}
+//class IcCreamDebugger {
+//  static const prefix = DEFAULT_PREFIX_UTF;
+//
+//  final call = new VarargsFunction((arguments) async {
+//    String output;
+//    // If no arguments are given, output filename and called line
+//    if (arguments.length == 0) {
+//      output = icWithoutArguments();
+//    } else {
+//      output = await icWithArguments(arguments);
+//    }
+//
+//    print("$prefix $output ");
+//  });
+//}
 
 VarargsFunction ic_debugger = new VarargsFunction((arguments) async {
-
   String output;
 
   String _prefix = DEFAULT_PREFIX_UTF;
-
-  // print(arguments);
 
   // If no arguments are given, output filename and called line
   if (arguments.length == 0) {
@@ -133,12 +142,8 @@ VarargsFunction ic_debugger = new VarargsFunction((arguments) async {
     output = await icWithArguments(arguments);
   }
 
+  print("$_prefix $output");
+
   // For testing purpose
-  printOutput(String output) {
-    print(output);
-  }
-
-  printOutput(output);
-
-  return "$_prefix $output ";
+  return "$_prefix $output";
 });

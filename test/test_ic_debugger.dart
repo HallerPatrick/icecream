@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:icecream/src/ic_debugger.dart';
 import 'package:icecream/icecream.dart' show ic;
 import 'package:test/test.dart';
@@ -24,8 +23,14 @@ Future main() async {
 
   group("Test for actual ouput of ic", () {
     var prefix = "🍦 ";
-    ic(3);
+    test("Ouput if no arguments are passed to ic", () async {
+      var output = await ic();
+      expect(output, "$prefix test_ic_debugger.dart:27 in main()");
+    });
+
+    test("Output if simple arguments are passed to ic", () async {
+      var output = await ic(2, "Pepe");
+      expect(output, '$prefix 2: 2, "Pepe": Pepe');
+    });
   });
-
-
 }

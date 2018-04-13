@@ -42,8 +42,6 @@ class ContentParser {
 
     while (this._input != "") {
       // Determine from first char of token, what type it is
-      print(_input[0]);
-      print(_evalType(this._input[0]));
       switch (_evalType(this._input[0])) {
         case TokenType.Whitespace:
           {

@@ -20,10 +20,10 @@ Future main() async {
 
   var line = "var output = await ic(2, foo());";
 
-  RegExp regExp = new RegExp("ic\(.*\)");
+  var parser = new ContentParser(line);
 
-  var matches = regExp.allMatches(line);
-  if(regExp.hasMatch(line)) {
-    print(regExp.firstMatch(line).group(1));
-  }
+  // var output = parser.parse();
+
+  var output = await ic(new Hello(), 3);
+  print(output);
 }
