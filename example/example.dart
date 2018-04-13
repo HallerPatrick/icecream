@@ -1,29 +1,12 @@
-import 'dart:async';
-import 'dart:io';
-
 import 'package:icecream/icecream.dart' show ic;
-import 'package:icecream/src/content_parser.dart';
-import 'package:icecream/src/ic_debugger.dart';
 
-class Hello {}
-
-void hello() {}
-
-foo(x) {
-  return x;
+num bar(num x, num y) {
+  return x + y;
 }
 
-Future main() async {
-  var x = ["3", 3];
+main() async {
 
-  Hello dummy = new Hello();
+  ic();
 
-  var line = "var output = await ic(2, foo());";
-
-  var parser = new ContentParser(line);
-
-  // var output = parser.parse();
-
-  var output = await ic(new Hello(), 3);
-  print(output);
+  ic(bar(1, 2));
 }
