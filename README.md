@@ -3,6 +3,7 @@
   <img src="icon.png" width="600px" alt="icecream">
 </h1>
 
+
 ### iceream for Dart is a flavor of a good tasting debugger
 
 It is a library inspired by the python [icecream](https://github.com/gruns/icecream) library
@@ -73,7 +74,23 @@ import 'package:icecream/icecream.dart' show ic;
 void main() async {
   var output = await ic("Hello");
 }
- ```
+```
+### Installation
+
+Insert in your pubspec.yaml:
+
+```yaml
+dependencies:
+  icecream: '0.1.2'
+```
+
+In command line:
+```
+pub get
+```
+
+Or let your IDE/Editor do the work
+ 
 
  ### TODO:
 

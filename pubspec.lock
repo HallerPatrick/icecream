@@ -12,7 +12,7 @@ packages:
       name: args
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.1"
+    version: "1.4.2"
   async:
     description:
       name: async
@@ -204,7 +204,7 @@ packages:
       name: pub_semver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.5"
+    version: "1.3.6"
   shelf:
     description:
       name: shelf
@@ -276,7 +276,7 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.33"
+    version: "0.12.34"
   typed_data:
     description:
       name: typed_data

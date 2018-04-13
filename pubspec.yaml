@@ -1,8 +1,17 @@
 name: icecream
-version: 0.1.0
+version: 0.1.2
 description: A simple debuger tool
 author: Patrick Haller <patrickhaller40@googlemail.com>
 homepage: https://github.com/HallerPatrick/icecream
+
+environment:
+    sdk: ">=1.8.0 <2.0.0"
+    
 dependencies:
     inspect: "^0.0.1"
-    test: "^0.12.33"
+
+dev_dependencies:
+    test: '>=0.12.20 <0.13.0'
+
+analyzer:
+    strong-mode: true
