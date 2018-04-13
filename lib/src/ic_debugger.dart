@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:mirrors';
 import 'package:icecream/src/content_parser.dart';
 import 'package:inspect/inspect.dart' show DartStack;
 
 const String DEFAULT_PREFIX_UTF = "🍦 ";
 const String DEFAULT_PREFIX = 'ic| ';
 const String DEFAULT_INDENT = '  ';
+
+String regex = "ic\([^\)]*\)";
+RegExp regExp = new RegExp(regex);
 
 typedef dynamic OnCall(List);
 
@@ -23,12 +25,7 @@ class VarargsFunction extends Function {
   }
 }
 
-void outputFunction(String output) {
-  // stdout.write(output);
-  print(output);
-}
-
-bool _isOneLiner(String line) {
+bool isOneLiner(String line) {
   if (line.contains("ic(") && line.contains(");")) {
     return true;
   } else {
@@ -57,16 +54,12 @@ Future<String> icWithArguments(arguments) async {
   stack = stack.getFrame(6);
 
   var lineNumber = stack.lineNumber;
-
-  var filename = stack.source.split("/").last;
+  
+  var filename = stack.source.replaceFirst('file://', '');
 
   for (var i = 0; i < arguments.length; i++) {
     final String name = await getVariableName(filename, lineNumber, i);
     var arg = arguments[i];
-    final type = reflect(arg).type.typeVariables;
-    final name1 = reflect(arg).type.qualifiedName.toString();
-    print("arg: $arg");
-
     output += name + ": " + arg.toString();
     if (i < arguments.length - 1 && arguments.length > 1) output += ", ";
   }
@@ -83,19 +76,23 @@ Future<String> getVariableName(
   var stack = new DartStack();
 
   var lineNumber = stack.getFrame(8).lineNumber;
+
   // for(int i=0; i<stack.frameCount; i++) print(" $i -> ${stack.getFrame(i).source}");
+  List<String> lines = await new File(filename).readAsLines();  
+  
+  var line = lines[lineNumber-1];
 
-  List<String> lines = await new File(filename).readAsLines();
+  print(regExp.firstMatch(line).group(1));
 
-  var line =
-      lines[lineNumber - 1].replaceFirst('ic(', '').replaceFirst(');', '');
-
-  if (!_isOneLiner(line)) {
-    var currentLineNumber = lineNumber;
+  
+  if (!isOneLiner(line)) {
+    var currentLineNumber = lineNumber-1;
     while (!lines[currentLineNumber].contains(");")) {
       line += lines[currentLineNumber].trim();
       currentLineNumber++;
     }
+  } else {
+    line = lines[lineNumber - 1].replaceFirst('ic(', '').replaceFirst(');', '');
   }
 
   var variable = extractVariable(line, argumentIndex);
@@ -117,14 +114,17 @@ class IcCreamDebugger {
       output = await icWithArguments(arguments);
     }
 
-    outputFunction("$prefix $output ");
+    printOutput("$prefix $output ");
   });
 }
 
 VarargsFunction ic_debugger = new VarargsFunction((arguments) async {
-  String _prefix = DEFAULT_PREFIX_UTF;
 
   String output;
+
+  String _prefix = DEFAULT_PREFIX_UTF;
+
+  // print(arguments);
 
   // If no arguments are given, output filename and called line
   if (arguments.length == 0) {
@@ -133,5 +133,12 @@ VarargsFunction ic_debugger = new VarargsFunction((arguments) async {
     output = await icWithArguments(arguments);
   }
 
-  outputFunction("$_prefix $output ");
+  // For testing purpose
+  printOutput(String output) {
+    print(output);
+  }
+
+  printOutput(output);
+
+  return "$_prefix $output ";
 });

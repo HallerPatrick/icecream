@@ -6,7 +6,7 @@
 
 ### IceCreamDart is a flavor off a good tasting debugger 
 
-It is a library inspired by the python icecream library
+It is a library inspired by the python [icecream](https://github.com/gruns/icecream) library
 
 The purpose is to to make debugging over the console easy again.
 

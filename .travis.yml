@@ -3,3 +3,7 @@ language: dart
 dart:
 - stable
 - "1.24.3"
+
+dart-task:
+- test: --platform vm
+- test: --platform chrome
