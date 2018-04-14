@@ -53,7 +53,7 @@ num bar(num x, num y) {
 }
 
 void main() {
-  ic(foo(1, 2));
+  ic(bar(1, 2));
 }
 
 ```
