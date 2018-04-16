@@ -90,6 +90,10 @@ pub get
 ```
 
 Or let your IDE/Editor do the work
+
+### Warning:
+
+This library depends on the dart:mirror core library and is therefore only usable in a standalone VM of Dart.
  
 
  ### TODO:
