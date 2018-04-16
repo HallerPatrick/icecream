@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:icecream/src/content_parser.dart';
 import 'package:inspect/inspect.dart' show DartStack;
+import 'package:colorize/colorize.dart';
 
 const String DEFAULT_PREFIX_UTF = "🍦 ";
 const String DEFAULT_PREFIX = 'ic| ';
@@ -34,8 +35,11 @@ bool isOneLiner(String line) {
 }
 
 String icWithoutArguments() {
+
+  const int stackFrame = 7;
+
   // 4th called frame is ic-Call
-  var stack = new DartStack().getFrame(5);
+  var stack = new DartStack().getFrame(stackFrame);
 
   // Line number of 4th frame
   var lineNumber = stack.lineNumber;
@@ -43,16 +47,21 @@ String icWithoutArguments() {
   // Take script name of complete directory
   var filename = stack.source.split("/").last;
 
-  return "$filename:$lineNumber in ${stack.methodName.trim()}()";
+  Colorize fileSpec = new Colorize("$filename:$lineNumber")..lightBlue();
+
+  return "$fileSpec in ${stack.methodName.trim()}()";
 }
 
 Future<String> icWithArguments(arguments) async {
+
+  const int stackFrame = 8;
+
   String output = "";
 
   var stack = new DartStack();
 
-  stack = stack.getFrame(6);
-
+  stack = stack.getFrame(stackFrame);
+  
   var lineNumber = stack.lineNumber;
 
   var filename = stack.source.replaceFirst('file://', '');
@@ -74,10 +83,12 @@ Future<String> getVariableName(
   // e.g.:
   // ic(x, y); , ic(2, 4);, ic(x, [2, 4], "hello")
 
+  const int stackFrame = 10;
+
   var stack = new DartStack();
 
-  // 8th stack is the ic call
-  var lineNumber = stack.getFrame(8).lineNumber;
+  // 10th stack is the ic call
+  var lineNumber = stack.getFrame(stackFrame).lineNumber;
 
   // Extract line from file
   List<String> lines = await new File(filename).readAsLines();
@@ -111,24 +122,42 @@ Future<String> getVariableName(
   return variable;
 }
 
+
 String extractVariable(String line, int index) =>
     new ContentParser(line).parse()[index];
 
-//class IcCreamDebugger {
-//  static const prefix = DEFAULT_PREFIX_UTF;
-//
-//  final call = new VarargsFunction((arguments) async {
-//    String output;
-//    // If no arguments are given, output filename and called line
-//    if (arguments.length == 0) {
-//      output = icWithoutArguments();
-//    } else {
-//      output = await icWithArguments(arguments);
-//    }
-//
-//    print("$prefix $output ");
-//  });
-//}
+class IcCreamDebugger extends Function {
+
+  static var _prefix = DEFAULT_PREFIX_UTF;
+
+  static bool printsOut = true;
+
+  static parseArguments(arguments) async {
+    var output;
+    if (arguments.length == 0) {
+      output = icWithoutArguments();
+    } else {
+      output = await icWithArguments(arguments);
+    }
+    return output;
+  }
+
+  setPrefix(String prefix) => _prefix = prefix;
+
+  enable() => printsOut = true;
+
+  disable() => printsOut = false;
+
+  var call = new VarargsFunction((arguments) async {
+    // If no arguments are given, output filename and called line
+    var output = await parseArguments(arguments);
+    if(printsOut) {
+      print("$_prefix $output");
+    }
+    return "$_prefix $output";
+  });
+
+}
 
 VarargsFunction ic_debugger = new VarargsFunction((arguments) async {
   String output;
@@ -147,3 +176,5 @@ VarargsFunction ic_debugger = new VarargsFunction((arguments) async {
   // For testing purpose
   return "$_prefix $output";
 });
+
+

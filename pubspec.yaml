@@ -1,5 +1,5 @@
 name: icecream
-version: 0.1.2
+version: 0.1.3
 description: A simple debuger tool
 author: Patrick Haller <patrickhaller40@googlemail.com>
 homepage: https://github.com/HallerPatrick/icecream
@@ -9,6 +9,7 @@ environment:
     
 dependencies:
     inspect: "^0.0.1"
+    colorize: "0.1.2"
 
 dev_dependencies:
     test: '>=0.12.20 <0.13.0'

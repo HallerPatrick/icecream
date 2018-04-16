@@ -17,6 +17,7 @@ Instead of `print()` or `window.console.log()`, `ic` helps to make developing mu
 
 Ic comes in handy to determine which part of code is being executed and where. So if no arguments are passed to ic, it prints out the filem, line and the parent function it is being executed in.
 
+`ic()` without arguments is synchronous 
 
 ```dart
 import 'package:icecream/icecream.dart' show ic;
@@ -44,6 +45,8 @@ Output:
 
 ic with arguments inspects them and return its arguments with the returning value
 
+Be aware due to some IO, `ic()` with arguments is async and therefore should be awaited to ensure the right printing order
+
 ```dart
 
 import 'package:icecream/icecream.dart' show ic;
@@ -52,8 +55,8 @@ num bar(num x, num y) {
   return x + y;
 }
 
-void main() {
-  ic(bar(1, 2));
+void main() async {
+  await ic(bar(1, 2));
 }
 
 ```
@@ -65,6 +68,7 @@ Output:
 ```
 
 #### Returning ic value
+
 ic returns its value async while the output will still be printed out
 
 ```dart
@@ -75,13 +79,54 @@ void main() async {
   var output = await ic("Hello");
 }
 ```
-### Installation
+
+#### Disable ic
+
+```dart
+
+import 'package:icecream/icecream.dart' show ic;
+
+void main() {
+  await ic();
+  await ic.disable();
+  await ic();
+  await ic.enable();
+  await ic();
+}
+
+```
+
+Output:
+
+```
+🍦  example.dart:4 in main()
+🍦  example.dart:8 in main()
+```
+
+### Custom prefix
+
+```dart
+import 'package:icecream/icecream.dart' show ic;
+
+void main() {
+  await ic.setPrefix("ic| ");
+  await ic(3);
+}
+```
+
+Output:
+
+```
+ic | 3: 3
+```
+
+## Installation
 
 Insert in your pubspec.yaml:
 
 ```yaml
 dependencies:
-  icecream: '0.1.2'
+  icecream: '0.1.3'
 ```
 
 In command line:

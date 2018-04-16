@@ -5,8 +5,32 @@ num bar(num x, num y) {
 }
 
 main() async {
+  await ic();
+  await ic.disable();
+  await ic();
+  await ic.enable();
+  await ic();
 
-  ic();
-
-  ic(bar(1, 2));
+  await simpleExample();
+  await diaableIc();
+  await changePrefix();
 }
+
+changePrefix() async {
+  await ic.setPrefix("ic |");
+  await ic(3);
+}
+
+simpleExample() async {
+  await ic(3);
+  await ic(bar(1, 2));
+}
+
+diaableIc() async {
+  await ic();
+  await ic.disable();
+  await ic();
+  await ic.enable();
+  await ic();
+}
+
