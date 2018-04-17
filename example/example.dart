@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'package:icecream/icecream.dart' show ic;
 
 num bar(num x, num y) {
   return x + y;
 }
 
-main() async {
+Future main() async {
   await ic();
   await ic.disable();
   await ic();
@@ -16,17 +17,17 @@ main() async {
   await changePrefix();
 }
 
-changePrefix() async {
+Future changePrefix() async {
   await ic.setPrefix("ic |");
   await ic(3);
 }
 
-simpleExample() async {
+Future simpleExample() async {
   await ic(3);
   await ic(bar(1, 2));
 }
 
-diaableIc() async {
+Future diaableIc() async {
   await ic();
   await ic.disable();
   await ic();

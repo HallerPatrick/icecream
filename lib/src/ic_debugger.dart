@@ -4,23 +4,29 @@ import 'package:icecream/src/content_parser.dart';
 import 'package:inspect/inspect.dart' show DartStack;
 import 'package:colorize/colorize.dart';
 
-const String DEFAULT_PREFIX_UTF = "🍦 ";
-const String DEFAULT_PREFIX = 'ic| ';
-const String DEFAULT_INDENT = '  ';
+const String defaultPrefixUTF8 = "🍦 ";
 
 String regex = "ic\(.*\)";
 RegExp regExp = new RegExp(regex);
 
 typedef dynamic OnCall(List);
 
+///
+/// A helper class that allows ic to take an arbitrary amount of arguments
+/// like *args in python
+///
+/// After receiving the not defined arguments [VarargsFunction] calls [noSuchMethod]
+/// where we extract the passed arguments
+///
 class VarargsFunction extends Function {
   OnCall _onCall;
 
   VarargsFunction(this._onCall);
 
-  call() => _onCall([]);
+  OnCall call() => _onCall([]);
 
-  noSuchMethod(Invocation invocation) {
+  @override
+  OnCall noSuchMethod(Invocation invocation) {
     final arguments = invocation.positionalArguments;
     return _onCall(arguments);
   }
@@ -35,7 +41,6 @@ bool isOneLiner(String line) {
 }
 
 String icWithoutArguments() {
-
   const int stackFrame = 7;
 
   // 4th called frame is ic-Call
@@ -53,15 +58,12 @@ String icWithoutArguments() {
 }
 
 Future<String> icWithArguments(arguments) async {
-
   const int stackFrame = 8;
 
   String output = "";
 
-  var stack = new DartStack();
+  var stack = new DartStack().getFrame(stackFrame);
 
-  stack = stack.getFrame(stackFrame);
-  
   var lineNumber = stack.lineNumber;
 
   var filename = stack.source.replaceFirst('file://', '');
@@ -114,26 +116,24 @@ Future<String> getVariableName(
 
   // Check if class init is used, and remove the "new" part for the content parser
   List<String> args = [];
-  line
-      .split(",")
-      .forEach((arg) => args.add(arg.replaceFirst("new ", "")));
+  line.split(",").forEach((arg) => args.add(arg.replaceFirst("new ", "")));
 
   var variable = extractVariable(args.join(","), argumentIndex);
   return variable;
 }
 
-
 String extractVariable(String line, int index) =>
     new ContentParser(line).parse()[index];
 
+// ignore: strong-mode
 class IcCreamDebugger extends Function {
-
-  static var _prefix = DEFAULT_PREFIX_UTF;
+  static var _prefix = defaultPrefixUTF8;
 
   static bool printsOut = true;
 
-  static parseArguments(arguments) async {
+  static Future<String> parseArguments(arguments) async {
     var output;
+    // If no arguments are given, output filename and called line
     if (arguments.length == 0) {
       output = icWithoutArguments();
     } else {
@@ -142,39 +142,17 @@ class IcCreamDebugger extends Function {
     return output;
   }
 
-  setPrefix(String prefix) => _prefix = prefix;
+  void setPrefix(String prefix) => _prefix = prefix;
 
-  enable() => printsOut = true;
+  void enable() => printsOut = true;
 
-  disable() => printsOut = false;
+  void disable() => printsOut = false;
 
   var call = new VarargsFunction((arguments) async {
-    // If no arguments are given, output filename and called line
     var output = await parseArguments(arguments);
-    if(printsOut) {
+    if (printsOut) {
       print("$_prefix $output");
     }
     return "$_prefix $output";
   });
-
 }
-
-VarargsFunction ic_debugger = new VarargsFunction((arguments) async {
-  String output;
-
-  String _prefix = DEFAULT_PREFIX_UTF;
-
-  // If no arguments are given, output filename and called line
-  if (arguments.length == 0) {
-    output = icWithoutArguments();
-  } else {
-    output = await icWithArguments(arguments);
-  }
-
-  print("$_prefix $output");
-
-  // For testing purpose
-  return "$_prefix $output";
-});
-
-

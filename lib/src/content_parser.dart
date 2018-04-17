@@ -1,8 +1,8 @@
-enum TokenType { String, Int, Variable, List, Map, Class, Whitespace, Comma }
+enum TokenType { string, integer, variable, list, map, klass, whitespace, comma }
 
 class StringType {
-  static const String SingleQuoteMark = "'";
-  static const String DoubleQuoteMark = '"';
+  static const String singleQuoteMark = "'";
+  static const String doubleQuoteMark = '"';
 }
 
 class ContentParser {
@@ -26,14 +26,14 @@ class ContentParser {
   }
 
   TokenType _evalType(char) {
-    if (char == " ") return TokenType.Whitespace;
-    if (char == ",") return TokenType.Comma;
-    if (_isNumeric(char)) return TokenType.Int;
-    if (_isAlpha(char)) return TokenType.Variable;
-    if ('"' == char || "'" == char) return TokenType.String;
-    if ('[' == char || ']' == char) return TokenType.List;
-    if ('{' == char || '}' == char) return TokenType.Map;
-    return TokenType.Class;
+    if (char == " ") return TokenType.whitespace;
+    if (char == ",") return TokenType.comma;
+    if (_isNumeric(char)) return TokenType.integer;
+    if (_isAlpha(char)) return TokenType.variable;
+    if ('"' == char || "'" == char) return TokenType.string;
+    if ('[' == char || ']' == char) return TokenType.list;
+    if ('{' == char || '}' == char) return TokenType.map;
+    return TokenType.klass;
   }
 
   /// Tokenizes the _input string in its corresponding types
@@ -43,7 +43,7 @@ class ContentParser {
     while (this._input != "") {
       // Determine from first char of token, what type it is
       switch (_evalType(this._input[0])) {
-        case TokenType.Whitespace:
+        case TokenType.whitespace:
           {
             if (this._input.length > 1) {
               _removeFirstCharFromInput();
@@ -52,7 +52,7 @@ class ContentParser {
             }
             break;
           }
-        case TokenType.Comma:
+        case TokenType.comma:
           {
             if (this._input.length > 1) {
               _removeFirstCharFromInput();
@@ -61,35 +61,35 @@ class ContentParser {
             }
             break;
           }
-        case TokenType.String:
+        case TokenType.string:
           {
             tokens.add(_getStringToken());
             break;
           }
-        case TokenType.Int:
+        case TokenType.integer:
           {
             tokens.add(_getIntToken());
             break;
           }
 
-        case TokenType.List:
+        case TokenType.list:
           {
-            tokens.add(_getListToken());
+            tokens.add(_getlistToken());
             break;
           }
 
-        case TokenType.Map:
+        case TokenType.map:
           {
             tokens.add(_getMapToken());
             break;
           }
 
-        case TokenType.Variable:
+        case TokenType.variable:
           {
-            tokens.add(_getVariableToken());
+            tokens.add(_getvariableToken());
             break;
           }
-        case TokenType.Class:
+        case TokenType.klass:
           {
             tokens.add(_getClassToken());
             break;
@@ -137,11 +137,11 @@ class ContentParser {
     return token;
   }
 
-  _removeFirstCharFromInput() {
+  void _removeFirstCharFromInput() {
     _input = _input.substring(1, _input.length);
   }
 
-  String _getListToken() {
+  String _getlistToken() {
     String token = "";
     int openBrackets = 0;
     if (_input[0] == "[") {
@@ -197,9 +197,9 @@ class ContentParser {
     return token;
   }
 
-  String _getVariableToken() {
+  String _getvariableToken() {
     String token = "";
-    // Variable type could also be function type, depending on brackets
+    // variable type could also be function type, depending on brackets
     int openBrackets = 0;
     while (this._input.length >= 1) {
       // Check if next char is a letter
@@ -242,9 +242,9 @@ class ContentParser {
 
   String _evalStringType() {
     if (this._input[0] == '"') {
-      return StringType.DoubleQuoteMark;
+      return StringType.doubleQuoteMark;
     } else {
-      return StringType.SingleQuoteMark;
+      return StringType.singleQuoteMark;
     }
   }
 }
