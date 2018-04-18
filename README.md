@@ -86,7 +86,7 @@ void main() async {
 
 import 'package:icecream/icecream.dart' show ic;
 
-void main() {
+void main() async {
   await ic();
   await ic.disable();
   await ic();
@@ -108,7 +108,7 @@ Output:
 ```dart
 import 'package:icecream/icecream.dart' show ic;
 
-void main() {
+void main() async {
   await ic.setPrefix("ic| ");
   await ic(3);
 }
