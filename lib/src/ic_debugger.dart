@@ -52,7 +52,7 @@ String icWithoutArguments() {
   // Take script name of complete directory
   var filename = stack.source.split("/").last;
 
-  Colorize fileSpec = new Colorize("$filename:$lineNumber")..lightBlue();
+  Colorize fileSpec = new Colorize("$filename:$lineNumber");
 
   return "$fileSpec in ${stack.methodName.trim()}()";
 }
@@ -81,7 +81,7 @@ Future<String> icWithArguments(arguments) async {
 Future<String> getVariableName(
     String filename, int line, int argumentIndex) async {
   // For now:
-  // variables and concrete datastructures possible
+  // variables and concrete data structures possible
   // e.g.:
   // ic(x, y); , ic(2, 4);, ic(x, [2, 4], "hello")
 
@@ -118,8 +118,7 @@ Future<String> getVariableName(
   List<String> args = [];
   line.split(",").forEach((arg) => args.add(arg.replaceFirst("new ", "")));
 
-  var variable = extractVariable(args.join(","), argumentIndex);
-  return variable;
+  return extractVariable(args.join(","), argumentIndex);
 }
 
 String extractVariable(String line, int index) =>
@@ -129,7 +128,7 @@ String extractVariable(String line, int index) =>
 class IcCreamDebugger extends Function {
   static var _prefix = defaultPrefixUTF8;
 
-  static bool printsOut = true;
+  static bool _printsOut = true;
 
   static Future<String> parseArguments(arguments) async {
     var output;
@@ -144,13 +143,13 @@ class IcCreamDebugger extends Function {
 
   void setPrefix(String prefix) => _prefix = prefix;
 
-  void enable() => printsOut = true;
+  void enable() => _printsOut = true;
 
-  void disable() => printsOut = false;
+  void disable() => _printsOut = false;
 
   var call = new VarargsFunction((arguments) async {
     var output = await parseArguments(arguments);
-    if (printsOut) {
+    if (_printsOut) {
       print("$_prefix $output");
     }
     return "$_prefix $output";

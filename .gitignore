@@ -8,3 +8,10 @@ build/
 pubspec.lock
 
 .vscode/
+
+# Idea stuffls
+.idea/icecream.iml
+.idea/libraries/Dart_Packages.xml
+.idea/libraries/Dart_SDK.xml
+.idea/misc.xml
+.idea/modules.xml

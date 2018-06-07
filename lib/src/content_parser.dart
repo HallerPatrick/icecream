@@ -8,8 +8,8 @@ class StringType {
 class ContentParser {
   String _input;
 
-  ContentParser(String _input) {
-    this._input = _input;
+  ContentParser(String input) {
+    this._input = input;
   }
 
   bool _isNumeric(String s) {
@@ -21,11 +21,11 @@ class ContentParser {
   }
 
   bool _isAlpha(String s) {
-    RegExp _alpha = new RegExp(r'^[a-zA-Z]+$');
-    return _alpha.hasMatch(s);
+    RegExp alpha = new RegExp(r'^[a-zA-Z]+$');
+    return alpha.hasMatch(s);
   }
 
-  TokenType _evalType(char) {
+  TokenType _evalType(String char) {
     if (char == " ") return TokenType.whitespace;
     if (char == ",") return TokenType.comma;
     if (_isNumeric(char)) return TokenType.integer;
@@ -36,7 +36,7 @@ class ContentParser {
     return TokenType.klass;
   }
 
-  /// Tokenizes the _input string in its corresponding types
+  /// Tokenize the input string in its corresponding types
   List<String> parse() {
     List<String> tokens = [];
 
@@ -74,7 +74,7 @@ class ContentParser {
 
         case TokenType.list:
           {
-            tokens.add(_getlistToken());
+            tokens.add(_getListToken());
             break;
           }
 
@@ -86,7 +86,7 @@ class ContentParser {
 
         case TokenType.variable:
           {
-            tokens.add(_getvariableToken());
+            tokens.add(_getVariableToken());
             break;
           }
         case TokenType.klass:
@@ -141,7 +141,7 @@ class ContentParser {
     _input = _input.substring(1, _input.length);
   }
 
-  String _getlistToken() {
+  String _getListToken() {
     String token = "";
     int openBrackets = 0;
     if (_input[0] == "[") {
@@ -197,7 +197,7 @@ class ContentParser {
     return token;
   }
 
-  String _getvariableToken() {
+  String _getVariableToken() {
     String token = "";
     // variable type could also be function type, depending on brackets
     int openBrackets = 0;
