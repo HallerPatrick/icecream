@@ -3,6 +3,7 @@
   <img src="icon.png" width="600px" alt="icecream">
 </h1>
 
+[![Build Status](https://travis-ci.org/HallerPatrick/icecream.svg?branch=master)](https://travis-ci.org/HallerPatrick/icecream)
 
 ### iceream for Dart is a flavor of a good tasting debugger
 
